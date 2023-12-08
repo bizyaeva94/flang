@@ -1,0 +1,12 @@
+admin:
+  login: mng
+  password: 1q2w3e4R
+manager:
+  login: Vasyukyuliya
+  password: Vasyukyuliya1
+courier:
+  login: ivanovivan
+  password: Ivanovivan1
+stand:
+  dev: https://delivery.dev.flang.io
+  prod: 123
