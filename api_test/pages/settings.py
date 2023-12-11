@@ -61,7 +61,7 @@ def get_settings_by_param(headers: dict, params: dict = None):
     """
     Получить все правила курьерской доставки, отфильтрованные по квери-параметру
     :param headers: токен
-    :param params: service_id / region_id / city_id
+    :param params: service_id / region_id / city_id / restaurant_id
     """
 
     response = requests.get(
