@@ -12,7 +12,7 @@ class SettingInterval(CustomBaseModel):
 
 
 class SettingTypePay(CustomBaseModel):
-    """Способы оплаты для всего курьерского правила"""
+    """Способы оплаты для курьерского правила"""
 
     cash: bool
     card: bool
