@@ -210,3 +210,306 @@ class TestSettings:
             setting = SettingGet.model_validate(item)
             assert restaurant_id in [restaurant.id for restaurant in setting.restaurants]
 
+    def test_create_same_city_setting(self, admin_auth):
+        """Нельзя создать правило курьерской доставки, если уже есть правило для этого города и сервиса"""
+
+        setting_create = SettingCreate(
+            default_setting=False,
+            service_id="3",
+            cities=["381"],
+            regions=["5"],
+            restaurants=[],
+            zones=[],
+            type_pay=SettingTypePay(cash=False, card=False, account=True, site=True),
+            rules=[
+                SettingRule(
+                    minimal_sum="1000",
+                    name="от 1000 р",
+                    price=300,
+                    payment_methods=SettingTypePay(
+                        cash=False, card=False, account=True, site=True
+                    )
+                ),
+            ],
+            intervals=None,
+            weekends=None,
+            holidays=None,
+            short_days=None,
+            working_sunday=True,
+            express_today=False,
+            express=None,
+            today=False,
+            today_info=None,
+            tomorrow=False,
+            tomorrow_info=None
+        )
+        response = create_setting(admin_auth, setting_create)
+        assert response.status_code == 200
+        setting_create_response = SettingGet.model_validate(response.json()["setting"])
+        setting_id = setting_create_response.id
+
+        setting_create_2 = SettingCreate(
+            default_setting=False,
+            service_id="3",
+            cities=["381"],
+            regions=["5"],
+            restaurants=[],
+            zones=[],
+            type_pay=SettingTypePay(cash=False, card=False, account=True, site=True),
+            rules=[
+                SettingRule(
+                    minimal_sum="1000",
+                    name="от 1000 р",
+                    price=200,
+                    payment_methods=SettingTypePay(
+                        cash=False, card=False, account=True, site=True
+                    )
+                ),
+            ],
+            intervals=None,
+            weekends=None,
+            holidays=None,
+            short_days=None,
+            working_sunday=True,
+            express_today=False,
+            express=None,
+            today=False,
+            today_info=None,
+            tomorrow=False,
+            tomorrow_info=None
+        )
+        response = create_setting(admin_auth, setting_create_2)
+        assert response.status_code == 409
+        assert response.json() == {"message": "правило для этого/этих города/городов и данной курьерской службы уже создано"}
+
+        response = delete_setting(admin_auth, setting_id)
+        assert response.status_code == 200
+        assert response.json() == {"data": {}}
+
+    def test_create_same_region_setting(self, admin_auth):
+        """Нельзя создать правило курьерской доставки, если уже есть правило для этого региона и сервиса"""
+
+        setting_create = SettingCreate(
+            default_setting=False,
+            service_id="3",
+            cities=[],
+            regions=["5"],
+            restaurants=[],
+            zones=[],
+            type_pay=SettingTypePay(cash=False, card=False, account=True, site=True),
+            rules=[
+                SettingRule(
+                    minimal_sum="1000",
+                    name="от 1000 р",
+                    price=300,
+                    payment_methods=SettingTypePay(
+                        cash=False, card=False, account=True, site=True
+                    )
+                ),
+            ],
+            intervals=None,
+            weekends=None,
+            holidays=None,
+            short_days=None,
+            working_sunday=True,
+            express_today=False,
+            express=None,
+            today=False,
+            today_info=None,
+            tomorrow=False,
+            tomorrow_info=None
+        )
+        response = create_setting(admin_auth, setting_create)
+        assert response.status_code == 200
+        setting_create_response = SettingGet.model_validate(response.json()["setting"])
+        setting_id = setting_create_response.id
+
+        setting_create_2 = SettingCreate(
+            default_setting=False,
+            service_id="3",
+            cities=[],
+            regions=["5"],
+            restaurants=[],
+            zones=[],
+            type_pay=SettingTypePay(cash=False, card=False, account=True, site=True),
+            rules=[
+                SettingRule(
+                    minimal_sum="1000",
+                    name="от 1000 р",
+                    price=200,
+                    payment_methods=SettingTypePay(
+                        cash=False, card=False, account=True, site=True
+                    )
+                ),
+            ],
+            intervals=None,
+            weekends=None,
+            holidays=None,
+            short_days=None,
+            working_sunday=True,
+            express_today=False,
+            express=None,
+            today=False,
+            today_info=None,
+            tomorrow=False,
+            tomorrow_info=None
+        )
+        response = create_setting(admin_auth, setting_create_2)
+        assert response.status_code == 409
+        assert response.json() == {"message": "правило для этого/этих региона/регионов и данной курьерской службы уже создано"}
+
+        response = delete_setting(admin_auth, setting_id)
+        assert response.status_code == 200
+        assert response.json() == {"data": {}}
+
+    def test_create_same_restaurant_setting(self, admin_auth):
+        """Нельзя создать правило курьерской доставки, если уже есть правило для этого склада и сервиса"""
+
+        setting_create = SettingCreate(
+            default_setting=False,
+            service_id="3",
+            cities=[],
+            regions=[],
+            restaurants=["46"],
+            zones=[],
+            type_pay=SettingTypePay(cash=False, card=False, account=True, site=True),
+            rules=[
+                SettingRule(
+                    minimal_sum="1000",
+                    name="от 1000 р",
+                    price=300,
+                    payment_methods=SettingTypePay(
+                        cash=False, card=False, account=True, site=True
+                    )
+                ),
+            ],
+            intervals=None,
+            weekends=None,
+            holidays=None,
+            short_days=None,
+            working_sunday=True,
+            express_today=False,
+            express=None,
+            today=False,
+            today_info=None,
+            tomorrow=False,
+            tomorrow_info=None
+        )
+        response = create_setting(admin_auth, setting_create)
+        assert response.status_code == 200
+        setting_create_response = SettingGet.model_validate(response.json()["setting"])
+        setting_id = setting_create_response.id
+
+        setting_create_2 = SettingCreate(
+            default_setting=False,
+            service_id="3",
+            cities=[],
+            regions=[],
+            restaurants=["46"],
+            zones=[],
+            type_pay=SettingTypePay(cash=False, card=False, account=True, site=True),
+            rules=[
+                SettingRule(
+                    minimal_sum="1000",
+                    name="от 1000 р",
+                    price=200,
+                    payment_methods=SettingTypePay(
+                        cash=False, card=False, account=True, site=True
+                    )
+                ),
+            ],
+            intervals=None,
+            weekends=None,
+            holidays=None,
+            short_days=None,
+            working_sunday=True,
+            express_today=False,
+            express=None,
+            today=False,
+            today_info=None,
+            tomorrow=False,
+            tomorrow_info=None
+        )
+        response = create_setting(admin_auth, setting_create_2)
+        assert response.status_code == 409
+        assert response.json() == {"message": "правило для этого склада и данной курьерской службы уже создано"}
+
+        response = delete_setting(admin_auth, setting_id)
+        assert response.status_code == 200
+        assert response.json() == {"data": {}}
+
+    def test_create_same_zone_setting(self, admin_auth):
+        """Нельзя создать правило курьерской доставки, если уже есть правило для этой зоны и сервиса"""
+
+        setting_create = SettingCreate(
+            default_setting=False,
+            service_id="3",
+            cities=[],
+            regions=[],
+            restaurants=["46"],
+            zones=["537"],
+            type_pay=SettingTypePay(cash=False, card=False, account=True, site=True),
+            rules=[
+                SettingRule(
+                    minimal_sum="1000",
+                    name="от 1000 р",
+                    price=300,
+                    payment_methods=SettingTypePay(
+                        cash=False, card=False, account=True, site=True
+                    )
+                ),
+            ],
+            intervals=None,
+            weekends=None,
+            holidays=None,
+            short_days=None,
+            working_sunday=True,
+            express_today=False,
+            express=None,
+            today=False,
+            today_info=None,
+            tomorrow=False,
+            tomorrow_info=None
+        )
+        response = create_setting(admin_auth, setting_create)
+        assert response.status_code == 200
+        setting_create_response = SettingGet.model_validate(response.json()["setting"])
+        setting_id = setting_create_response.id
+
+        setting_create_2 = SettingCreate(
+            default_setting=False,
+            service_id="3",
+            cities=[],
+            regions=[],
+            restaurants=["46"],
+            zones=["537"],
+            type_pay=SettingTypePay(cash=False, card=False, account=True, site=True),
+            rules=[
+                SettingRule(
+                    minimal_sum="1000",
+                    name="от 1000 р",
+                    price=200,
+                    payment_methods=SettingTypePay(
+                        cash=False, card=False, account=True, site=True
+                    )
+                ),
+            ],
+            intervals=None,
+            weekends=None,
+            holidays=None,
+            short_days=None,
+            working_sunday=True,
+            express_today=False,
+            express=None,
+            today=False,
+            today_info=None,
+            tomorrow=False,
+            tomorrow_info=None
+        )
+        response = create_setting(admin_auth, setting_create_2)
+        assert response.status_code == 409
+        assert response.json() == {"message": "правило для этого склада, зоны и данной курьерской службы уже создано"}
+
+        response = delete_setting(admin_auth, setting_id)
+        assert response.status_code == 200
+        assert response.json() == {"data": {}}
