@@ -513,3 +513,97 @@ class TestSettings:
         response = delete_setting(admin_auth, setting_id)
         assert response.status_code == 200
         assert response.json() == {"data": {}}
+
+    def test_change_setting(self, admin_auth):
+        setting_create = SettingCreate(
+            default_setting=False,
+            service_id="3",
+            cities=[],
+            regions=[],
+            restaurants=["46"],
+            zones=["537"],
+            type_pay=SettingTypePay(cash=False, card=False, account=True, site=True),
+            rules=[
+                SettingRule(
+                    minimal_sum="0",
+                    name="до 1000 р",
+                    price=300,
+                    payment_methods=SettingTypePay(
+                        cash=True, card=True, account=False, site=False
+                    ),
+                ),
+                SettingRule(
+                    minimal_sum="1000",
+                    name="от 1000 р",
+                    price=0,
+                    payment_methods=SettingTypePay(
+                        cash=True, card=True, account=False, site=False
+                    ),
+                ),
+            ],
+            intervals=None,
+            weekends=None,
+            holidays=None,
+            short_days=None,
+            working_sunday=True,
+            express_today=False,
+            express=None,
+            today=False,
+            today_info=None,
+            tomorrow=False,
+            tomorrow_info=None
+        )
+        response = create_setting(admin_auth, setting_create)
+        assert response.status_code == 200
+        setting_create_response = SettingGet.model_validate(response.json()["setting"])
+        setting_id = setting_create_response.id
+
+        setting_change = SettingCreate(
+            default_setting=False,
+            service_id="3",
+            cities=[],
+            regions=[],
+            restaurants=["46"],
+            zones=["537"],
+            type_pay=SettingTypePay(cash=False, card=False, account=True, site=True),
+            rules=[
+                SettingRule(
+                    minimal_sum="0",
+                    name="до 500 р",
+                    price=100,
+                    payment_methods=SettingTypePay(
+                        cash=False, card=False, account=True, site=True
+                    ),
+                ),
+                SettingRule(
+                    minimal_sum="500",
+                    name="от 500 р",
+                    price=50,
+                    payment_methods=SettingTypePay(
+                        cash=False, card=False, account=True, site=True
+                    ),
+                ),
+            ],
+            intervals=None,
+            weekends=None,
+            holidays=None,
+            short_days=None,
+            working_sunday=True,
+            express_today=False,
+            express=None,
+            today=False,
+            today_info=None,
+            tomorrow=False,
+            tomorrow_info=None
+        )
+        response = change_setting(admin_auth, setting_id, setting_change)
+        assert response.status_code == 200
+
+        response = get_setting(admin_auth, setting_id)
+        assert response.status_code == 200
+        setting_get = SettingGet.model_validate(response.json()["data"])
+        assert setting_get.rules == setting_change.rules
+
+        response = delete_setting(admin_auth, setting_id)
+        assert response.status_code == 200
+        assert response.json() == {"data": {}}

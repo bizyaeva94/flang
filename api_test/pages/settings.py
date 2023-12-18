@@ -30,9 +30,10 @@ def get_setting(headers: dict, setting_id: int):
     return response
 
 
-def change_setting(headers: dict, setting_id: int):
+def change_setting(headers: dict, setting_id: int, data: SettingCreate):
     """
     Изменить правило курьерской доставки
+    :param data: тело запроса
     :param headers: токен
     :param setting_id: id правила
     """
@@ -40,7 +41,7 @@ def change_setting(headers: dict, setting_id: int):
     response = requests.put(
         f"{DEV}/api/courier_services/settings/{setting_id}",
         headers=headers,
-        data=SettingCreate().model_dump_json(),
+        data=data.model_dump_json(),
     )
     return response
 
