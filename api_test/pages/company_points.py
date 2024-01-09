@@ -30,17 +30,18 @@ def get_company_point(headers: dict, point_id: int):
     return response
 
 
-def change_company_point(headers: dict, point_id: int):
+def change_company_point(headers: dict, point_id: int, data: CompanyPointCreate):
     """
     Изменить правило самовывоза
     :param headers: токен
     :param point_id: id правила
+    :param data: тело запроса
     """
 
     response = requests.put(
         f"{DEV}/api/courier_services/company_points/{point_id}",
         headers=headers,
-        data=CompanyPointCreate().model_dump_json(),
+        data=data.model_dump_json(),
     )
     return response
 

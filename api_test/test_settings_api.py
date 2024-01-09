@@ -515,6 +515,8 @@ class TestSettings:
         assert response.json() == {"data": {}}
 
     def test_change_setting(self, admin_auth):
+        """Создать правило курьерской доставки, отредактировать, удалить"""
+
         setting_create = SettingCreate(
             default_setting=False,
             service_id="3",

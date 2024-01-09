@@ -76,3 +76,5 @@ class CompanyPointGet(CompanyPointCreate):
     restaurants: Optional[List[PointRestaurant]] = None
     services: Optional[List[PointService]] = None
     zones: Optional[List[PointZone]] = None
+    id: int
+    company_id: str
