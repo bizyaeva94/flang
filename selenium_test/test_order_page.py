@@ -4,7 +4,7 @@ from config import *
 
 
 class TestManager:
-    link = f"{DEV}/orders-list/new"
+    link = f"{STAND_URL}/orders-list/new"
 
     def test_empty_manager(self, browser):
         """Список менеджеров пуст, пока не выбран город"""
@@ -36,7 +36,7 @@ class TestManager:
 
 
 class TestDecorator:
-    link = f"{DEV}/orders-list/new"
+    link = f"{STAND_URL}/orders-list/new"
 
     def test_empty_decorator(self, browser):
         """Список оформителей пуст, пока не выбран город"""

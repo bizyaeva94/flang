@@ -8,5 +8,4 @@ courier:
   login: ivanovivan
   password: Ivanovivan1
 stand:
-  dev: https://delivery.dev.flang.io
-  prod: 123
+  url: https://delivery.dev.flang.io

@@ -10,7 +10,7 @@ def create_courier(headers: dict, first_name: str):
     :param first_name: имя курьера
     """
     response = requests.post(
-        f"{DEV}/api/couriers",
+        f"{STAND_URL}/api/couriers",
         headers=headers,
         data=CourierCreate(first_name=first_name).model_dump_json(),
     )
@@ -24,7 +24,7 @@ def get_couriers(headers: dict, params: dict = None):
     :param params: квери-параметры для фильтрации
     """
     response = requests.get(
-        f"{DEV}/api/couriers",
+        f"{STAND_URL}/api/couriers",
         headers=headers,
         params=params,
     )
@@ -38,7 +38,7 @@ def get_courier(headers: dict, courier_id: int):
     :param courier_id: id курьера
     """
     response = requests.get(
-        f"{DEV}/api/couriers/{courier_id}",
+        f"{STAND_URL}/api/couriers/{courier_id}",
         headers=headers,
     )
     return response
@@ -51,7 +51,7 @@ def change_courier(headers: dict, courier_id: int):
     :param courier_id: id курьера
     """
     response = requests.put(
-        f"{DEV}/api/couriers/{courier_id}",
+        f"{STAND_URL}/api/couriers/{courier_id}",
         headers=headers,
         data=CourierChange().model_dump_json(),
     )
@@ -65,7 +65,7 @@ def delete_courier(headers: dict, courier_id: int):
     :param courier_id: id курьера
     """
     response = requests.delete(
-        f"{DEV}/api/couriers/{courier_id}",
+        f"{STAND_URL}/api/couriers/{courier_id}",
         headers=headers,
     )
     return response
@@ -78,7 +78,7 @@ def update_warehouse_return_schedule(headers: dict, courier_id: int):
     :param courier_id: id курьера
     """
     response = requests.patch(
-        f"{DEV}/api/couriers/{courier_id}",
+        f"{STAND_URL}/api/couriers/{courier_id}",
         headers=headers,
         data=CourierWarehouseReturnSchedule.model_dump_json(),
     )
@@ -92,7 +92,7 @@ def open_workday(headers: dict, courier_id: int):
     :param courier_id: id курьера
     """
     response = requests.post(
-        f"{DEV}/api/couriers/{courier_id}/workdays",
+        f"{STAND_URL}/api/couriers/{courier_id}/workdays",
         headers=headers,
     )
     return response
@@ -105,7 +105,7 @@ def close_workday(headers: dict, courier_id: int):
     :param courier_id: id курьера
     """
     response = requests.put(
-        f"{DEV}/api/couriers/{courier_id}/workdays",
+        f"{STAND_URL}/api/couriers/{courier_id}/workdays",
         headers=headers,
     )
     return response
@@ -119,7 +119,7 @@ def get_workdays(headers: dict, courier_id: int = None):
     """
     params = {"courier_id": courier_id} if courier_id else None
     response = requests.get(
-        f"{DEV}/api/couriers/workdays",
+        f"{STAND_URL}/api/couriers/workdays",
         headers=headers,
         params=params,
     )

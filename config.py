@@ -15,4 +15,4 @@ MANAGER_PASSWORD = parameters.get("manager", dict()).get("password", None)
 COURIER_LOGIN = parameters.get("courier", dict()).get("login", None)
 COURIER_PASSWORD = parameters.get("courier", dict()).get("password", None)
 
-DEV = parameters.get("stand", dict()).get("dev", None)
+STAND_URL = parameters.get("stand", dict()).get("url", None)

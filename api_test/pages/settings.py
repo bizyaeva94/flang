@@ -11,7 +11,7 @@ def create_setting(headers: dict, data: SettingCreate):
     """
 
     response = requests.post(
-        f"{DEV}/api/courier_services/settings",
+        f"{STAND_URL}/api/courier_services/settings",
         headers=headers,
         data=data.model_dump_json(),
     )
@@ -26,7 +26,7 @@ def get_setting(headers: dict, setting_id: int):
     """
 
     response = requests.get(
-        f"{DEV}/api/courier_services/settings/{setting_id}", headers=headers)
+        f"{STAND_URL}/api/courier_services/settings/{setting_id}", headers=headers)
     return response
 
 
@@ -39,7 +39,7 @@ def change_setting(headers: dict, setting_id: int, data: SettingCreate):
     """
 
     response = requests.put(
-        f"{DEV}/api/courier_services/settings/{setting_id}",
+        f"{STAND_URL}/api/courier_services/settings/{setting_id}",
         headers=headers,
         data=data.model_dump_json(),
     )
@@ -54,7 +54,7 @@ def delete_setting(headers: dict, setting_id: int):
     """
 
     response = requests.delete(
-        f"{DEV}/api/courier_services/settings/{setting_id}", headers=headers)
+        f"{STAND_URL}/api/courier_services/settings/{setting_id}", headers=headers)
     return response
 
 
@@ -66,7 +66,7 @@ def get_settings_by_param(headers: dict, params: dict = None):
     """
 
     response = requests.get(
-        f"{DEV}/api/courier_services/settings/",
+        f"{STAND_URL}/api/courier_services/settings/",
         headers=headers,
         params=params
     )
