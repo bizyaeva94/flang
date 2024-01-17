@@ -11,7 +11,7 @@ def get_points_by_param(headers: dict, params: dict = None):
     """
 
     response = requests.get(
-        f"{DEV}/api/courier_services/points/",
+        f"{STAND_URL}/api/courier_services/points/",
         headers=headers,
         params=params
     )
@@ -26,7 +26,7 @@ def get_point(headers: dict, point_id: int):
     """
 
     response = requests.get(
-        f"{DEV}/api/courier_services/points/{point_id}",
+        f"{STAND_URL}/api/courier_services/points/{point_id}",
         headers=headers
     )
     return response
@@ -41,7 +41,7 @@ def change_point(headers: dict, point_id: int, data: PointChange):
     """
 
     response = requests.put(
-        f"{DEV}/api/courier_services/points/company/{point_id}",
+        f"{STAND_URL}/api/courier_services/points/company/{point_id}",
         headers=headers,
         data=data.model_dump_json()
     )
@@ -57,7 +57,7 @@ def change_many_points(headers: dict, data: PointChange, params: dict = None):
     """
 
     response = requests.post(
-        f"{DEV}/api/courier_services/points/many",
+        f"{STAND_URL}/api/courier_services/points/many",
         headers=headers,
         params=params,
         data=data.model_dump_json()

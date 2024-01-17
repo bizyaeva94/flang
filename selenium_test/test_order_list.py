@@ -5,7 +5,7 @@ from config import *
 
 
 class TestFilters:
-    link = f"{DEV}/orders-list"
+    link = f"{STAND_URL}/orders-list"
 
     def test_check_all_filters(self, browser):
         """Включение и выключение фильтров на странице заказов"""

@@ -1,4 +1,4 @@
-from pydantic import Field, ConfigDict
+from pydantic import Field
 from typing import List, Optional
 from .base_models import CustomBaseModel
 
@@ -57,11 +57,11 @@ class PointGet(PointsGet):
 class PointChange(CustomBaseModel):
     """Изменение ПВЗ"""
 
-    active: Optional[bool]
-    card: Optional[bool]
-    cash: Optional[bool]
-    restaurant_id: Optional[str]
-    sklad: Optional[str]
+    active: Optional[bool] = None
+    card: Optional[bool] = None
+    cash: Optional[bool] = None
+    restaurant_id: Optional[str] = None
+    sklad: Optional[str] = None
 
 
 class PointsPagination(CustomBaseModel):
