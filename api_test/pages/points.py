@@ -43,7 +43,7 @@ def change_point(headers: dict, point_id: int, data: PointChange):
     response = requests.put(
         f"{STAND_URL}/api/courier_services/points/company/{point_id}",
         headers=headers,
-        data=data.model_dump_json()
+        data=data.model_dump_json(exclude_none=True)
     )
     return response
 

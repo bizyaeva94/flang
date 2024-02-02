@@ -1,4 +1,4 @@
-from pydantic import Field
+from pydantic import Field, StrictInt
 from typing import List, Optional
 from .base_models import CustomBaseModel
 

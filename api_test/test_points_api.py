@@ -21,35 +21,32 @@ class TestPoints:
         response = get_points_by_param(admin_auth, {"limit": "100"})
         num = random.randint(0, 99)
         point_id = response.json()["points"][num]["id"]
-        logger.info(point_id)
+        logger.info(f"Тест проверяет пвз с id {point_id}")
         response = get_point(admin_auth, point_id)
-        assert response.status_code == 200
-        PointGet.model_validate(response.json()["point"])
+        assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
+        assert PointGet.model_validate(response.json()["point"]), f"В пвз с id {point_id} полученный ответ не соответствует модели"
 
     def test_get_all_points(self, admin_auth):
         """Получить все ПВЗ без параметров (по умолчанию метод возвращает только активные ПВЗ)"""
 
         response = get_points_by_param(admin_auth)
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
         for item in response.json()["points"]:
             point = PointsGet.model_validate(item)
-            assert point.active is True
+            assert point.active is True, "Не все полученные пвз активны"
         pagination = PointsPagination.model_validate(response.json()["pagination"])
-        assert pagination.limit == 20
-        assert pagination.page == 1
+        assert pagination.limit == 20, "Дефолтный лимит пагинации не равен 20"
+        assert pagination.page == 1, "Дефолтная страница пагинации не равна 1"
         # тут нужно сделать запрос в базу, чтобы проверить count и total_pages
 
     def test_get_inactive_points(self, admin_auth):
         """Получить не активные ПВЗ"""
 
         response = get_points_by_param(admin_auth, {"active": "false"})
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
         for item in response.json()["points"]:
             point = PointsGet.model_validate(item)
-            assert point.active is False
-        pagination = PointsPagination.model_validate(response.json()["pagination"])
-        assert pagination.limit == 20
-        assert pagination.page == 1
+            assert point.active is False, "Не все полученные пвз неактивны"
 
     def test_get_points_by_service(self, admin_auth):
         """Получить ПВЗ, отфильтрованные по сервису.
@@ -58,21 +55,24 @@ class TestPoints:
         response = get_services(admin_auth, {"country_id": "1"})
         services_count = len(response.json())
         if services_count == 0:
+            logger.info("В ответ пришло 0 сервисов, тест не был пройден")
             return
 
         services = {}
         for service in response.json():
             if service["name"] in ["BOXBERRY", "СДЭК", "FivePost", "Halva"]:
                 services.update({service["id"]: service["name"]})
+        logger.info(f"Тест проверяет сервисы {services}")
 
         for key in services.keys():
             service_id = str(key)
             response = get_points_by_param(admin_auth, {"service_id": service_id})
-            assert response.status_code == 200
+            assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
 
             for item in response.json()["points"]:
                 point = PointsGet.model_validate(item)
-                assert point.service_id == service_id
+                assert point.service_id == service_id, (f"Id сервиса {point.service_id} в пвз {point.id} "
+                                                        f"не равно искомому {service_id}")
 
     def test_get_points_by_region(self, admin_auth):
         """Получить ПВЗ, отфильтрованные по региону
@@ -83,13 +83,14 @@ class TestPoints:
         for region in response.json()["regions"]:
             if region["name"] in ["Московская", "Ленинградская", "Ростовская", "Самарская"]:
                 regions.append(region["id"])
+        logger.info(f"Тест проверяет регионы с id {regions}")
         for region_id in regions:
-            logger.info(f"region_id = {region_id}")
             response = get_points_by_param(admin_auth, {"region_id": region_id})
-            assert response.status_code == 200
+            assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
             for item in response.json()["points"]:
                 point = PointsGet.model_validate(item)
-                assert point.region_id == region_id
+                assert point.region_id == region_id, (f"Id региона {point.region_id} в пвз {point.id} "
+                                                      f"не равно искомому {region_id}")
 
     def test_get_points_by_city(self, admin_auth):
         """Получить ПВЗ, отфильтрованные по городу
@@ -100,13 +101,14 @@ class TestPoints:
         for city in response.json()["cities"]:
             if city["name"] in ["Волгоград", "Челябинск", "Ростов-на-Дону", "Воронеж"]:
                 cities.append(city["id"])
+        logger.info(f"Тест проверяет города с id {cities}")
         for city_id in cities:
-            logger.info(f"city_id = {city_id}")
             response = get_points_by_param(admin_auth, {"city_id": city_id})
-            assert response.status_code == 200
+            assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
             for item in response.json()["points"]:
                 point = PointsGet.model_validate(item)
-                assert point.city_id == city_id
+                assert point.city_id == city_id, (f"Id города {point.city_id} в пвз {point.id} "
+                                                  f"не равно искомому {city_id}")
 
     def test_get_points_by_restaurant(self, admin_auth):
         """Получить ПВЗ, отфильтрованные по складу
@@ -115,17 +117,20 @@ class TestPoints:
         response = get_restaurants(admin_auth)
         restaurants_count = len(response.json()["restaurants"])
         if restaurants_count == 0:
+            logger.info("В ответ пришло 0 пвз, тест не был пройден")
             return
 
         while True:
             num = random.randint(0, restaurants_count)
             restaurant_id = str(get_restaurants(admin_auth).json()["restaurants"][num]["id"])
+            logger.info(f"Тест проверяет ресторан с id {restaurant_id}")
             response = get_points_by_param(admin_auth, {"restaurant_id": restaurant_id})
-            assert response.status_code == 200
+            assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
             if len(response.json()["points"]) != 0:
                 for item in response.json()["points"]:
                     point = PointsGet.model_validate(item)
-                    assert point.restaurant_id == restaurant_id
+                    assert point.restaurant_id == restaurant_id, (f"Id ресторана {point.restaurant_id} в пвз {point.id}"
+                                                                  f" не равно искомому {restaurant_id}")
                 break
 
     def test_get_points_by_search_address(self, admin_auth):
@@ -135,15 +140,17 @@ class TestPoints:
         response = get_points_by_param(admin_auth, {"limit": "100"})
         points_count = len(response.json()["points"])
         if points_count == 0:
+            logger.info("В ответ пришло 0 пвз, тест не был пройден")
             return
 
         num = random.randint(0, points_count)
         search_word = PointsGet.model_validate(response.json()["points"][num]).address
+        logger.info(f"Тест проверяет адрес {search_word}")
         response = get_points_by_param(admin_auth, {"search": search_word})
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
         for item in response.json()["points"]:
             point = PointsGet.model_validate(item)
-            assert search_word in point.address
+            assert search_word in point.address, f"В пвз {point.id} в адресе {point.address} нет слова {search_word}"
 
     def test_get_points_by_search_name(self, admin_auth):
         """Получить ПВЗ, отфильтрованные по поисковому слову в названии
@@ -152,15 +159,17 @@ class TestPoints:
         response = get_points_by_param(admin_auth, {"limit": "100"})
         points_count = len(response.json()["points"])
         if points_count == 0:
+            logger.info("В ответ пришло 0 пвз, тест не был пройден")
             return
 
         num = random.randint(0, points_count)
         search_word = PointsGet.model_validate(response.json()["points"][num]).name
+        logger.info(f"Тест проверяет название {search_word}")
         response = get_points_by_param(admin_auth, {"search": search_word})
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
         for item in response.json()["points"]:
             point = PointsGet.model_validate(item)
-            assert search_word in point.name
+            assert search_word in point.name, f"В пвз {point.id} в названии {point.name} нет слова {search_word}"
 
     def test_get_points_by_country(self, admin_auth):
         """Получить ПВЗ, отфильтрованные по стране
@@ -171,14 +180,15 @@ class TestPoints:
         for country in response.json()["countries"]:
             if country["name"] in ["Россия", "Беларусь", "Казахстан", "Армения"]:
                 countries.update({country["id"]: country["name"]})
+        logger.info(f"Тест проверяет страны {countries}")
         for key, value in countries.items():
             response = get_points_by_param(admin_auth, {"country_id": key})
             limit = PointsPagination.model_validate(response.json()["pagination"]).limit
             response = get_points_by_param(admin_auth, {"country_id": key, "flag": "true", "limit": limit})
-            assert response.status_code == 200
+            assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
             for item in response.json()["points"]:
                 point = PointGet.model_validate(item)
-                assert point.country == value
+                assert point.country == value, f"В пвз {point.id} страна {point.country} отличается от искомой страны {value}"
 
         # тест падает потому что в России есть пвз Армении, Киргизии и пвз без страны, и в Казахстане есть пвз Киргизии
 
@@ -189,7 +199,7 @@ class TestPoints:
         response = get_points_by_param(admin_auth, {"limit": "100"})
         num = random.randint(0, 99)
         point_id = response.json()["points"][num]["id"]
-        logger.info(point_id)
+        logger.info(f"Тест проверяет пвз с id {point_id}")
 
         response = get_point(admin_auth, point_id)
         point = PointGet.model_validate(response.json()["point"])
@@ -205,14 +215,14 @@ class TestPoints:
         )
         logger.info(f"changed body = {body}")
         response = change_point(admin_auth, point_id, body)
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
 
         response = get_point(admin_auth, point_id)
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
         point = PointGet.model_validate(response.json()["point"])
-        assert point.card == body.card
-        assert point.cash == body.cash
-        assert point.active == body.active
+        assert point.card == body.card, f"Значение card в пвз {point.card} не поменялось на значение {body.card}"
+        assert point.cash == body.cash, f"Значение cash в пвз {point.cash} не поменялось на значение {body.cash}"
+        assert point.active == body.active, f"Значение active в пвз {point.active} не поменялось на значение {body.active}"
 
         # возвращаем исходные значения
         body_2 = PointChange(
@@ -221,11 +231,11 @@ class TestPoints:
             active=active,
         )
         response = change_point(admin_auth, point_id, body_2)
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
 
         response = get_point(admin_auth, point_id)
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Код ответа = {response.status_code}, сообщение = {response.text}"
         point = PointGet.model_validate(response.json()["point"])
-        assert point.card == body_2.card
-        assert point.cash == body_2.cash
-        assert point.active == body_2.active
+        assert point.card == body_2.card, f"Значение card в пвз {point.card} не поменялось на значение {body_2.card}"
+        assert point.cash == body_2.cash, f"Значение cash в пвз {point.cash} не поменялось на значение {body_2.cash}"
+        assert point.active == body_2.active, f"Значение active в пвз {point.active} не поменялось на значение {body_2.active}"
